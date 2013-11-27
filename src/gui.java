@@ -110,7 +110,7 @@ public class gui extends JFrame implements ActionListener {
             Reader.UIcko.setStatus("Downloading images...");
             imgDownloader.downloadAlbumImages(links.linksAlbum);
             Reader.UIcko.setStatus("Downloading album images...");
-            Reader.UIcko.setStatus("Completed");
+            Reader.UIcko.setStatus("Completed!");
         } catch (Exception ex) {
             ex.printStackTrace();
         }
