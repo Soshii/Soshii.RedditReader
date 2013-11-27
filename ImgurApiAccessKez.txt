@@ -1,0 +1,6 @@
+Client ID:df87216782fd34d
+Client secret:5686699d89a48f0a9ba047e8f2e8a0f9b57d748c
+
+httpPost.setHeader("Authorization", yourClientId);
+
+apache httpclient
