@@ -14,18 +14,31 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.ArrayList;
 
-public class imgDownloader extends gui  {
+public class imgDownloader extends gui implements Runnable {
 
     static gui imgDownloader;
 
+    static int p=0;
+
+    public void run() {
+        downloadImages(userLinkScanner.getLinks());
+        downloadAlbumImages(userLinkScanner.getAlbumLinks());
+
+    }
+
     public static void downloadImages(ArrayList<String> links) {
         imgDownloader = new gui();
-        Reader.UIcko.setStatus("Downloading images...");
 
         try {
-            int p=0;
             String lin;
-            new File("C:\\imgs\\" + imgDownloader.getSource()).mkdirs();
+
+            if (System.getProperty("os.name").contains("windows") || System.getProperty("os.name").contains("Windows")) {
+                new File("C:\\imgs\\" + imgDownloader.getSource()).mkdirs();
+            } else if (System.getProperty("os.name").contains("OS X") || System.getProperty("os.name").contains("os x")) {
+                new File("/Users/" + System.getProperty("user.name") + "/Desktop/" + imgDownloader.getSource()).mkdirs();
+            }
+            System.out.println(links.size());
+
             for (String s:links) {
                 String[] tokens = s.split("\\.");
                 if (s.contains("http://i.imgur")) {
@@ -63,17 +76,24 @@ public class imgDownloader extends gui  {
             String link = (String) data.get("link");
 
             BufferedImage image;
-
             try {
                 URL adresa = new URL(link);
                 image = ImageIO.read(adresa);
-                p++;
-                String ext = link.substring(27);
+                //System.out.println(link);
+                String[] explode = link.split("/");
+                String[] secondExplode = explode[explode.length-1].split("\\.");
+                String ext = secondExplode[secondExplode.length-1];
+                //System.out.println(ext);
                 if (ext.equals("gif")) {
                     continue;
                 }
-                ImageIO.write(image, ext, new File("C:\\imgs\\" + imgDownloader.getSource() + "\\image" + p + "." + ext));
-                Reader.UIcko.setStatus("File number " + p + " written.");
+                if (System.getProperty("os.name").contains("windows") || System.getProperty("os.name").contains("Windows")) {
+                    ImageIO.write(image, ext, new File("C:\\imgs\\" + imgDownloader.getSource() + "\\image" + p + "." + ext));
+                } else if (System.getProperty("os.name").contains("OS X") || System.getProperty("os.name").contains("os x")) {
+                    ImageIO.write(image, ext, new File("/Users/" + System.getProperty("user.name") + "/Desktop/" + imgDownloader.getSource() + "/image" + p + "." + ext));
+                }
+                p++;
+                gui.setStatus("File number " + p + " written.");
 
             } catch (IOException e) {
                 e.printStackTrace();
@@ -91,12 +111,17 @@ public class imgDownloader extends gui  {
         }
     }
 
-    public static void  downloadAlbumImages(ArrayList<String> linksAlbum) {
-        gui tata = new gui();
+    public static void downloadAlbumImages(ArrayList<String> linksAlbum) {
         try {
             ArrayList<String> linksSubAlbum = new ArrayList<String>();
-            int p=0;
-            new File("C:\\imgs\\" + tata.getSource()).mkdirs();
+            //int p=0;
+
+            if (System.getProperty("os.name").contains("windows") || System.getProperty("os.name").contains("Windows")) {
+                new File("C:\\imgs\\" + imgDownloader.getSource()).mkdirs();
+            } else if (System.getProperty("os.name").contains("OS X") || System.getProperty("os.name").contains("os x")) {
+                new File("/Users/" + System.getProperty("user.name") + "/Desktop/" + imgDownloader.getSource()).mkdirs();
+            }
+
             for (String s:linksAlbum) {
                 String lin = s.substring(19,24);
                 DefaultHttpClient httpClient = new DefaultHttpClient();
@@ -137,9 +162,21 @@ public class imgDownloader extends gui  {
                     for (String url : linksSubAlbum){
                         URL adresa = new URL(url);
                         image = ImageIO.read(adresa);
+                        //System.out.println(link);
+                        String[] explode = url.split("/");
+                        String[] secondExplode = explode[explode.length-1].split("\\.");
+                        String ext = secondExplode[secondExplode.length-1];
+                        //System.out.println(ext);
+                        if (ext.equals("gif")) {
+                            continue;
+                        }
+                        if (System.getProperty("os.name").contains("windows") || System.getProperty("os.name").contains("Windows")) {
+                            ImageIO.write(image, ext, new File("C:\\imgs\\" + imgDownloader.getSource() + "\\image" + p + "." + ext));
+                        } else if (System.getProperty("os.name").contains("OS X") || System.getProperty("os.name").contains("os x")) {
+                            ImageIO.write(image, ext, new File("/Users/" + System.getProperty("user.name") + "/Desktop/" + imgDownloader.getSource() + "/image" + p + "." + ext));
+                        }
                         p++;
-                        ImageIO.write(image, "png", new File("C:\\imgs\\" + tata.getSource()+ "\\albumImage" + p + ".png"));
-                        Reader.UIcko.setStatus("File number \" + p + \" written.");
+                        gui.setStatus("File number " + p + " written.");
                     }
 
                 } catch (IOException e) {
@@ -147,8 +184,11 @@ public class imgDownloader extends gui  {
                 }
 
                 linksSubAlbum.clear();
+
                 httpClient.getConnectionManager().shutdown();
             }
+
+            gui.setStatus("Completed!");
         } catch (ClientProtocolException e) {
 
             e.printStackTrace();

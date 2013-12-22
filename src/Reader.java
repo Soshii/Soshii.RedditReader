@@ -6,12 +6,16 @@ public class Reader {
 
     public static void main(String[] args) throws Exception {
         try {
-            UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
-        } catch (Exception e) {
-            System.out.println("error");
-        }
-        UIcko = new gui();
+            if (System.getProperty("os.name").contains("windows") || System.getProperty("os.name").contains("Windows")) {
+                UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
+            }
 
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        UIcko = new gui();
+        //ahoj
         UIcko.makeUI();
     }
 

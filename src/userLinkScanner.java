@@ -6,18 +6,39 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.ArrayList;
 
-public class userLinkScanner {
+public class userLinkScanner implements Runnable {
 
-    private URL reddit;
     private String after = null;
-    public ArrayList<String> links = new ArrayList<String>();
-    public ArrayList<String> linksAlbum = new ArrayList<String>();
+    private static ArrayList<String> links = new ArrayList<String>();
+    private static ArrayList<String> linksAlbum = new ArrayList<String>();
 
-    public void getLinks() throws Exception {
+    public static ArrayList<String> getLinks() {
+
+        return links;
+
+    }
+
+    public static ArrayList<String> getAlbumLinks() {
+
+        return linksAlbum;
+
+    }
+
+    public void run() {
+        System.out.println("uLS method run executed");
+        try {
+            makeLinks();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    public void makeLinks() throws Exception {
+        URL reddit;
         gui tata = new gui();
 
         for (int i=0;i<tata.getNOfPages();i++) {
-            Reader.UIcko.setStatus("Downloading...");
             if (tata.getUOrSub().equals("u")) {
                 reddit = new URL("http://www.reddit.com/user/" + tata.getSource() + "/submitted/.json?sort=" + tata.getSorting() + "&t=" + tata.getSortingTime() + "&after=" + after);
             } else {
@@ -38,6 +59,7 @@ public class userLinkScanner {
             JSONArray children = (JSONArray) data.get("children");
 
             for (Object childObj:children) {
+
                 JSONObject zero = (JSONObject) childObj;
                 JSONObject data1 = (JSONObject) zero.get("data");
                 String author = (String) data1.get("url");
@@ -51,7 +73,12 @@ public class userLinkScanner {
                     }
                 }
             }
+
         }
+
+    Thread downloadThread = new Thread(new imgDownloader());
+    downloadThread.start();
+
    }
 
 }

@@ -17,7 +17,7 @@ public class gui extends JFrame implements ActionListener {
     private JComboBox sorting = new JComboBox(sortingA);
     private String[] sortingTimeA = {"Hour", "Day", "Week", "Year", "All"};
     private JComboBox sortingTime = new JComboBox(sortingTimeA);
-    JLabel status = new JLabel("");
+    private static JLabel status = new JLabel("");
     JFrame frame;
 
     static int UOrSub;
@@ -27,18 +27,18 @@ public class gui extends JFrame implements ActionListener {
     static int NOf;
 
     public String getUOrSub() {
-        if (UOrSub == 0) {
+        if (gui.UOrSub == 0) {
             return "u";
         }
         return "s";
     }
 
     public String getSource() {
-        return SourceStr;
+        return gui.SourceStr;
     }
 
     public String getSorting() {
-        switch (SortingInt) {
+        switch (gui.SortingInt) {
             case 0: return "hot";
             case 1: return "new";
             case 2: return "rising";
@@ -49,7 +49,7 @@ public class gui extends JFrame implements ActionListener {
     }
 
     public String getSortingTime() {
-        switch (SortingTimeInt) {
+        switch (gui.SortingTimeInt) {
             case 0: return "hour";
             case 1: return "day";
             case 2: return "week";
@@ -60,32 +60,32 @@ public class gui extends JFrame implements ActionListener {
     }
 
     public int getNOfPages() {
-        return NOf;
+        return gui.NOf;
     }
 
     //SETTERS
     public void setUOrSub(int u) {
-        UOrSub = u;
+        gui.UOrSub = u;
     }
 
     public void setSource(String src) {
-        SourceStr = src;
+        gui.SourceStr = src;
     }
 
     public void setSorting(int k) {
-        SortingInt = k;
+        gui.SortingInt = k;
     }
 
     public void setSortingTime(int l) {
-        SortingTimeInt = l;
+        gui.SortingTimeInt = l;
     }
 
     public void setNOfPages(int NOfInt) {
-        NOf = NOfInt;
+        gui.NOf = NOfInt;
     }
 
-    public void setStatus(String stat) {
-        status.setText(stat);
+    public static void setStatus(String stat) {
+        gui.status.setText(stat);
     }
 
     public void actionPerformed(ActionEvent e) {
@@ -103,14 +103,11 @@ public class gui extends JFrame implements ActionListener {
             setSortingTime(sortingTime.getSelectedIndex());
             setNOfPages(Integer.parseInt(nOfPages.getText()));
 
-            userLinkScanner links = new userLinkScanner();
-            links.getLinks();
-            Reader.UIcko.setStatus("Getting links...");
-            imgDownloader.downloadImages(links.links);
-            Reader.UIcko.setStatus("Downloading images...");
-            imgDownloader.downloadAlbumImages(links.linksAlbum);
-            Reader.UIcko.setStatus("Downloading album images...");
-            Reader.UIcko.setStatus("Completed!");
+
+            Thread linkGet = new Thread(new userLinkScanner());
+            linkGet.start();
+
+            gui.setStatus("Getting links...");
         } catch (Exception ex) {
             ex.printStackTrace();
         }
